@@ -1,6 +1,6 @@
 <% provide(:title, @user.name) %>
 <div>
-  <table class="table table-bordered table-condensed user-table">
+  <table class="table table-bordered table-condensed user-table"  id="table-attendances">
     <tr>
       <td>
         <%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-primary" %>
@@ -54,9 +54,13 @@
                <%= link_to "出社", user_attendance_path(@user, day), method: :patch, class:"btn btn-primary btn-attendance" %>
              <% end %>
            </td>
-           <td></td>
-           <td></td>
-           <td></td>
+           <td><%= day.finished_at.hour if day.finished_at.present? %></td>
+           <td><%= day.finished_at.min if day.finished_at.present? %></td>
+           <td>
+             <% if (Date.current == day.worked_on) && day.started_at.present? && day.finished_at.nil? %>
+               <%= link_to "退社", user_attendance_path(@user, day), method: :patch, class:"btn btn-primary btn-attendance" %>
+             <% end %>              
+           </td>
            <td></td>
            <td></td>
          </tr>
