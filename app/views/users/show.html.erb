@@ -63,12 +63,25 @@
            </td>
            <td>
              <% if day.started_at.present? && day.finished_at.present? %>
-               <%= working_times(day.started_at, day.finished_at) %>
+               <%= str_times = working_times(day.started_at, day.finished_at) %>
+               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
              <% end %>
            </td>
            <td></td>
          </tr>
        <% end %>  
      </tbody>
+     <tfoot>
+       <tr>
+         <td colspan="2">累計日数</td>
+         <td colspan="6">総合勤務時間</td>
+         <td colspan="2">累計在社時間</td>
+       </tr>
+       <tr>
+         <td colspan="2"><%= @attendances.count %>日</td>
+         <td colspan="6"><%= format_basic_info(@user.work_time).to_f * @worked_sum %>時間</td>
+         <td colspan="2"><%= format("%.2f", @total_working_times.to_f) %>時間</td>
+       </tr>
+     </tfoot>
   </div>
 </div>
