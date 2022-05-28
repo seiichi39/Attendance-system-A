@@ -61,7 +61,11 @@
                <%= link_to "退社", user_attendance_path(@user, day), method: :patch, class:"btn btn-primary btn-attendance" %>
              <% end %>              
            </td>
-           <td></td>
+           <td>
+             <% if day.started_at.present? && day.finished_at.present? %>
+               <%= working_times(day.started_at, day.finished_at) %>
+             <% end %>
+           </td>
            <td></td>
          </tr>
        <% end %>  
