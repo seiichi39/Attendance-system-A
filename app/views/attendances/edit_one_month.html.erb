@@ -1,4 +1,5 @@
 <% provide(:title, @user.name) %>
+<%= form_with(model: @user, url: attendances_update_one_month_user_path(date: @first_day), local: true, method: :patch) do |f| %>
 <div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
@@ -28,4 +29,6 @@
 
 <div class="center">
   <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-default" %>
+  <%= f.submit "編集を保存する", class: "btn btn-lg btn-default" %>   
 </div>
+<% end %>
