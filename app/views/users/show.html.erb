@@ -41,12 +41,15 @@
         <th>　　</th>
       </tr>
     </thead>
-    
      <tbody>
        <% @attendances.each do |day| %>
+         <% css_class = case day.worked_on.wday
+                       when 6 then 'text-primary'
+                       when 0 then 'text-danger'
+                       end %>
          <tr>
            <td><%= l(day.worked_on, format: :short) %></td>
-           <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+           <td class = "<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
            <td><%= day.started_at.hour if day.started_at.present? %></td>
            <td><%= day.started_at.min if day.started_at.present? %></td>
            <td>
