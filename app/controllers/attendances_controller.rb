@@ -32,7 +32,8 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
-        attendance.update_attributes!(item)
+        attendance.attributes = (item)
+        attendance.save!(context: :validate_one_month)
       end
     end
     flash[:success] = "１ヶ月分の勤怠情報を更新しました。"
