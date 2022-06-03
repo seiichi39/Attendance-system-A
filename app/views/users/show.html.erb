@@ -50,15 +50,15 @@
          <tr>
            <td><%= l(day.worked_on, format: :short) %></td>
            <td class = "<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
-           <td><%= day.started_at.hour if day.started_at.present? %></td>
-           <td><%= day.started_at.min if day.started_at.present? %></td>
+           <td><%= day.started_at.floor_to(15.minutes).hour if day.started_at.present? %></td>
+           <td><%= day.started_at.floor_to(15.minutes).min if day.started_at.present? %></td>
            <td>
              <% if (Date.current == day.worked_on) && day.started_at.nil? %>
                <%= link_to "出社", user_attendance_path(@user, day), method: :patch, class:"btn btn-primary btn-attendance" %>
              <% end %>
            </td>
-           <td><%= day.finished_at.hour if day.finished_at.present? %></td>
-           <td><%= day.finished_at.min if day.finished_at.present? %></td>
+           <td><%= day.finished_at.floor_to(15.minutes).hour if day.finished_at.present? %></td>
+           <td><%= day.finished_at.floor_to(15.minutes).min if day.finished_at.present? %></td>
            <td>
              <% if (Date.current == day.worked_on) && day.started_at.present? && day.finished_at.nil? %>
                <%= link_to "退社", user_attendance_path(@user, day), method: :patch, class:"btn btn-primary btn-attendance" %>
@@ -66,7 +66,7 @@
            </td>
            <td>
              <% if day.started_at.present? && day.finished_at.present? %>
-               <%= str_times = working_times(day.started_at, day.finished_at) %>
+               <%= str_times = working_times(day.started_at.floor_to(15.minutes), day.finished_at.floor_to(15.minutes)) %>
                <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
              <% end %>
            </td>
