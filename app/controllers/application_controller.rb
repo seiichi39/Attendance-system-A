@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
   def admin_or_correct_user
     @user = User.find(params[:user_id]) if @user.blank?
     unless current_user?(@user) || current_user.admin?
-      flash[:danger] = "編集権限がありません"
+      flash[:danger] = "権限がありません"
       redirect_to current_user
     end
   end
