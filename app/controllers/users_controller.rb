@@ -59,6 +59,10 @@ class UsersController < ApplicationController
     end
     redirect_to users_url
   end
+
+  def go_work
+    @users = User.all.includes(:attendances)
+  end
   
   private
   
