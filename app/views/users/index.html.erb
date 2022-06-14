@@ -1,10 +1,8 @@
 <% provide(:title, 'All Users') %>
+<% provide(:class_text, 'All User') %>
+<% provide(:button_text, '更新') %>
 
-<% if !@search_user.blank? %>
-  <h1>検索結果</h1>
-<% else %>
-  <h1>全てのユーザー</h1>
-<% end %>
+<h1>ユーザー一覧</h1>
 
 <div class="row">
   <div class="col-md-offset-8">
@@ -20,28 +18,38 @@
   </div>
 </div>
 
-<div class="col-md-10 col-md-offset-1">
-  <%= will_paginate %>
-  <table class="table table-condensed table-hover" id="table-users">
-    <thead>
-      <tr>
-        <th><%= User.human_attribute_name :name %></th>
-      </tr>
-    </thead>
-    
-    <% @users.each do |user| %>
-      <tr>
-        <td><%= link_to user.name, user %></td>
-        <td>
-          <%= link_to "基本情報編集", edit_basic_info_user_path(user), remote: true, class: "btn btn-success" %> 
-          <%= link_to "削除", user, method: :delete,
+<%= will_paginate %>
+<table class="table">
+  <% @users.each do |user| %>
+    <tr>
+      <td>
+        <div class="col-md-22" col-md-offset-1>
+        <% if current_user.admin? && !current_user?(user) %>
+        <% @user = user %>
+        <%= user.name %>
+        <br>| <%= link_to "削除", user, method: :delete,
               data: { confirm: "削除してよろしいですか？" },
-              class: "btn btn-danger" %>
-        </td>
-      </tr>
-    <% end %>
-  </table>
-  <%= will_paginate %>
-</div>
+              class: "btn btn-primary" %><br>
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <button type="button" data-toggle="collapse" data-target="#collapse<%= user.id %>" class="btn btn-primary btn-lg">編集</button>
+                </h4>
+              </div>
+              <div id="collapse<%= user.id %>" class="panel-collapse collapse">
+                <div class="panel-body"><%= render 'users/form_2', locals:{ user: @user } %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% end %>
+        </div>
+      </td>
+    </tr>
+  <% end %>
+</table>
+<%= will_paginate %>
+
 
 <div id="edit-basic-info" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
