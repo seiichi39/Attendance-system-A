@@ -1,0 +1,25 @@
+<% provide(:title, 'base') %>
+<% provide(:class_text, 'base') %>
+<% provide(:button_text, '更新') %>
+
+<h1>拠点一覧</h1>
+
+<div class="col-md-10 col-md-offset-1">
+  <table class="table table-condensed table-hover" id="table-users">
+    <thead>
+      <tr>
+        <th>拠点番号</th>
+        <th>拠点名</th>
+        <th>拠点種類</th>
+      </tr>
+    </thead>
+    
+    <% @bases.each do |base| %>
+      <tr>
+        <td><%= base.base_number %></td>
+        <td><%= base.base_name %></td>
+        <td><%= base.base_type %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
