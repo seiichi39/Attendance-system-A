@@ -78,8 +78,9 @@
                        when 6 then 'text-primary'
                        when 0 then 'text-danger'
                        end %>
+        <% @day = day %>
         <tr>
-          <td><%= link_to "残業申請", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %></td>
+          <td><%= link_to "残業申請", attendances_edit_overwork_request_user_path(@user, date: day.worked_on), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
             <td class = "<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
             <td><%= day.started_at.floor_to(15.minutes).hour if day.started_at.present? %></td>
@@ -134,3 +135,5 @@
       </td>
     </tfoot>
   </table>
+
+  <div id="edit-overwork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

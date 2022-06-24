@@ -1,8 +1,8 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month]
+  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overwork_request, :update_overwork_request]
   before_action :logged_in_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
-  before_action :set_one_month, only: :edit_one_month
+  before_action :set_one_month, only: [:edit_one_month, :edit_overwork_request]
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。" 
   
@@ -42,11 +42,32 @@ class AttendancesController < ApplicationController
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
+
+  def edit_overwork_request
+    @attendance = @user.attendances.find_by(worked_on: params[:date])
+  end
+
+  def update_overwork_request
+    overwork_request_params.each do |id, item|
+      attendance = Attendance.find(id)
+      if attendance.update(item)
+        flash[:success] = "残業申請を送信しました。"
+      else
+        flash[:danger] = "残業申請に失敗しました。"
+      end
+      redirect_to @user
+    end
+  end
   
   private
   
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+    end
+
+    def overwork_request_params
+      params.require(:user).permit(attendances: [:scheduled_finished_at, :business_processing_content, 
+                                                :next_day, :application_destination])[:attendances]
     end
     
 end
