@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20220620112403) do
     t.datetime "over_work_time"
     t.boolean "next_day", default: false
     t.string "business_processing_content"
+    t.integer "request_user"
     t.string "request_status"
     t.integer "request_destination"
     t.boolean "change", default: false

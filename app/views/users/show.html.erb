@@ -28,8 +28,8 @@
     ２件のお知らせがあります
   </div>
   <div>
-    <%= link_to "【残業申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>
-    ２件のお知らせがあります
+    <%= link_to "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true %>
+    <%= @attendance_request_count %>件のお知らせがあります
   </div>
 </div>
 <div class="button-area">
@@ -137,3 +137,4 @@
   </table>
 
   <div id="edit-overwork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+  <div id="edit-overwork-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

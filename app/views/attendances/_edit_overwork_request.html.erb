@@ -1,4 +1,3 @@
-<% provide(:title, @user.name) %>
 <% provide(:class_text, 'overwork-request') %>
 <% provide(:button_text, '変更を送信する') %>
 
@@ -36,7 +35,9 @@
                         <td><%= attendance.time_field :scheduled_finished_at, class: "form-control" %></td>
                         <td><%= attendance.check_box :next_day, {}, class: "form-control" %></td>
                         <td><%= attendance.text_field :business_processing_content, class: "form-control" %></td>
-                        <td><%= attendance.collection_select :request_destination, User.all.where(superior: true).order(:id), :superior, :name, prompt: "", class: "form-control" %></td>
+                        <td><%= attendance.collection_select :request_destination, User.all.where(superior: true).order(:id), :id, :name, prompt: "", class: "form-control" %></td>
+                        <%= attendance.hidden_field :request_status, value: "申請中" %>
+                        <%= attendance.hidden_field :request_user, value: @user.id %>
                       </tr>
                     <% end %>
                   <% end %>

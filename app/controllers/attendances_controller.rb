@@ -1,5 +1,5 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overwork_request, :update_overwork_request]
+  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_overwork_request, :update_overwork_request, :edit_overwork_notice, :update_overwork_notice]
   before_action :logged_in_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: [:edit_one_month, :edit_overwork_request]
@@ -58,6 +58,20 @@ class AttendancesController < ApplicationController
       redirect_to @user
     end
   end
+
+  def edit_overwork_notice
+    @request_users = User.where(id: Attendance.where(request_destination: @user.id).select(:user_id))
+    @attendance_lists = Attendance.where(request_destination: @user.id)
+    if @attendance_lists.nil?
+      @attendance_request_count = "0"
+    else
+      @attendance_request_count = @attendance_lists.count
+    end
+    @attendance = Attendance.find(params[:id])
+  end
+
+  def update_overwork_notice
+  end
   
   private
   
@@ -66,8 +80,7 @@ class AttendancesController < ApplicationController
     end
 
     def overwork_request_params
-      params.require(:user).permit(attendances: [:scheduled_finished_at, :business_processing_content, 
-                                                :next_day, :application_destination])[:attendances]
+      params.require(:user).permit(attendances: [:scheduled_finished_at, :business_processing_content, :next_day, :request_user, :request_status, :request_destination])[:attendances]
     end
     
 end
