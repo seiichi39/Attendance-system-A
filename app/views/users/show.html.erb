@@ -7,8 +7,11 @@
       &emsp;<%= l(@first_day, format: :middle) %>　時間管理表&emsp;
       <%= link_to "→", user_path(date: @first_day.next_month), class: "btn btn-primary" %>
     </td>
-    <td>指定勤務時間　<%= format_basic_info(@user.work_time) %></td>
-    <td>基本時間　<%= format_basic_info(@user.basic_time) %></td>
+    <td>
+      <div>指定勤務開始時間　<%= format_basic_info(@user.designed_work_start_time) %></div>
+      <div>指定勤務終了時間　<%= format_basic_info(@user.designed_work_end_time)%></div>
+    </td>
+    <td>基本時間　<%= format_basic_info(@user.basic_work_time) %></td>
     <td>初日　<%= l(@first_day, format: :short) %></td>
   </tr>
   <tr>
@@ -18,7 +21,7 @@
     <td>締日　<%= l(@last_day, format: :short) %></td>
   </tr>
 </table>
-<div class="application-area">
+<div>
   <div>
     <%= link_to "【所属長承認申請のお知らせ】", attendances_edit_one_month_user_path(date: @first_day) %>
     ２件のお知らせがあります
@@ -28,8 +31,14 @@
     ２件のお知らせがあります
   </div>
   <div>
-    <%= link_to "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true %>
-    <%= @attendance_request_count %>件のお知らせがあります
+    <% if @user.superior? %>
+      <% if @attendance_overwork_request_count == 0 %>
+      【残業申請のお知らせ】
+      <% else %>
+        <%= link_to "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true, class:"request-area" %>
+        <div class="request-area"><%= @attendance_overwork_request_count %>件のお知らせがあります</div>
+      <% end %>
+    <% end %>
   </div>
 </div>
 <div class="button-area">

@@ -13,6 +13,12 @@ class UsersController < ApplicationController
   
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
+    @attendance_overwork_lists = Attendance.where(request_destination: @user.id)
+    if @attendance_overwork_lists.nil?
+      @attendance_overwork_request_count = "0"
+    else
+      @attendance_overwork_request_count = @attendance_overwork_lists.count
+    end
   end
   
   def new

@@ -1,7 +1,7 @@
 /* ユーザー情報テーブル */
 
 .user-table {
-  vercial-align: middle;
+  vertical-align: middle;
   text-align: center;
 }
 
@@ -45,13 +45,29 @@
   }
 }
 
-.application-area {
-  margin-bottom: 10px;
+.request-area {
   color: red;
+  display: inline-block;
+  _display: inline;
 }
 
 .button-area {
+  margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.overtime-request {
+  th{
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+.line {
+  td{
+    text-align: center;
+    vertical-align: middle;
+  }
 }
 
 /* 基本情報編集モーダルウィンドウ */

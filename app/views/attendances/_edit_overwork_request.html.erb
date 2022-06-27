@@ -10,46 +10,42 @@
       <h1 class="modal-title">【残業申請】</h1>
     </div>
     <div class="modal-body">
-      <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-          <%= form_with(model: @user, url: attendances_update_overwork_request_user_path(@user, date: params[:date]), local: true, method: :patch) do |f| %>
-            <%= render 'shared/error_messages', object: @user %>
-            <table class="table table-bordered table-condensed">
-              <thead>
-                <tr>
-                  <th>日付</th>
-                  <th>曜日</th>
-                  <th>終了予定時間</th>
-                  <th>翌日</th>
-                  <th>業務処理内容</th>
-                  <th>指示者確認㊞</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% @attendances.each do |day| %>
-                  <%= f.fields_for "attendances[]", day do |attendance| %>
-                    <% if day.worked_on == @attendance.worked_on %>
-                      <tr>
-                        <td><%= l(day.worked_on, format: :short) %></td>
-                        <td><%= $days_of_the_week[day.worked_on.wday] %></td>
-                        <td><%= attendance.time_field :scheduled_finished_at, class: "form-control" %></td>
-                        <td><%= attendance.check_box :next_day, {}, class: "form-control" %></td>
-                        <td><%= attendance.text_field :business_processing_content, class: "form-control" %></td>
-                        <td><%= attendance.collection_select :request_destination, User.all.where(superior: true).order(:id), :id, :name, prompt: "", class: "form-control" %></td>
-                        <%= attendance.hidden_field :request_status, value: "申請中" %>
-                        <%= attendance.hidden_field :request_user, value: @user.id %>
-                      </tr>
-                    <% end %>
-                  <% end %>
+      <%= form_with(model: @user, url: attendances_update_overwork_request_user_path(@user, date: params[:date]), local: true, method: :patch) do |f| %>
+        <%= render 'shared/error_messages', object: @user %>
+        <table class="table table-bordered table-condensed table-hover" id="table-overwork-request">
+          <thead class="overtime-request">
+            <tr>
+              <th>日付</th>
+              <th>曜日</th>
+              <th>終了予定時間</th>
+              <th>翌日</th>
+              <th>業務処理内容</th>
+              <th>指示者確認㊞</th>
+            </tr>
+          </thead>
+          <tbody class="line">
+            <% @attendances.each do |day| %>
+              <%= f.fields_for "attendances[]", day do |attendance| %>
+                <% if day.worked_on == @attendance.worked_on %>
+                  <tr>
+                    <td><%= l(day.worked_on, format: :short) %></td>
+                    <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+                    <td><%= attendance.time_field :scheduled_finished_at, class: "form-control" %></td>
+                    <td><%= attendance.check_box :next_day, {}, class: "form-control" %></td>
+                    <td><%= attendance.text_field :business_processing_content, class: "form-control" %></td>
+                    <td><%= attendance.collection_select :request_destination, User.all.where(superior: true).order(:id), :id, :name, prompt: "上長を選択してください。", class: "form-control" %></td>
+                    <%= attendance.hidden_field :request_status, value: "申請中" %>
+                    <%= attendance.hidden_field :request_user, value: @user.id %>
+                  </tr>
                 <% end %>
-              </tbody>  
-            </table>
-            <div class="center">
-              <%= f.submit yield(:button_text), class: "btn btn-primary btn-#{yield(:class_text)}" %>
-            </div>
-          <% end %>
+              <% end %>
+            <% end %>
+          </tbody>  
+        </table>
+        <div class="center">
+          <%= f.submit yield(:button_text), class: "btn btn-primary btn-block btn-#{yield(:class_text)}" %>
         </div>
-      </div>
+      <% end %>
     </div>
   </div>
 </div>

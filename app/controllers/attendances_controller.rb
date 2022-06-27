@@ -62,11 +62,6 @@ class AttendancesController < ApplicationController
   def edit_overwork_notice
     @request_users = User.where(id: Attendance.where(request_destination: @user.id).select(:user_id))
     @attendance_lists = Attendance.where(request_destination: @user.id)
-    if @attendance_lists.nil?
-      @attendance_request_count = "0"
-    else
-      @attendance_request_count = @attendance_lists.count
-    end
     @attendance = Attendance.find(params[:id])
   end
 
