@@ -61,12 +61,32 @@ class AttendancesController < ApplicationController
 
   def edit_overwork_notice
     @request_users = User.where(id: Attendance.where(request_destination: @user.id).select(:user_id))
-    @attendance_lists = Attendance.where(request_destination: @user.id)
+    @attendance_lists = Attendance.where("(request_destination = ?) AND (change = ?)", @user.id, false)
     @attendance = Attendance.find(params[:id])
   end
 
   def update_overwork_notice
-  end
+    update_judgement = "false"
+    overwork_notice_params.each do |id,item|
+      attendance = Attendance.find(id)
+      if overwork_notice_params[id][:change] == "true"
+        if overwork_notice_params[id][:request_status] == "承認"
+          attendance.request_status = "承認"
+        elsif overwork_notice_params[id][:request_status] == "否認"
+          attendance.request_status = "否認"
+        else overwork_notice_params[id][:request_status] == "なし" 
+          attendance.request_status = "なし"
+        end
+        attendance.update(item)
+        update_judgement = "true"
+      end
+      flash[:success] = "上長確認しました。"
+    end
+    unless update_judgement == "true"
+      flash[:danger] = "上長確認する場合、変更ボタンにチェックを入れてください。"
+    end
+    redirect_to user_path(@user)
+  end 
   
   private
   
@@ -76,6 +96,10 @@ class AttendancesController < ApplicationController
 
     def overwork_request_params
       params.require(:user).permit(attendances: [:scheduled_finished_at, :business_processing_content, :next_day, :request_user, :request_status, :request_destination])[:attendances]
+    end
+
+    def overwork_notice_params
+      params.require(:user).permit(attendances: [:scheduled_finished_at, :business_processing_content, :change, :request_status, :over_work_time])[:attendances]
     end
     
 end

@@ -3,8 +3,8 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :admin_or_correct_user, only: :show
-  before_action :set_one_month, only: :show
+  # before_action :admin_or_correct_user, only: :show
+  before_action :set_one_month
   
   def index
     @users = User.paginate(page: params[:page]).search(params[:search]).order(id: "ASC")
@@ -13,11 +13,11 @@ class UsersController < ApplicationController
   
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
-    @attendance_overwork_lists = Attendance.where(request_destination: @user.id)
-    if @attendance_overwork_lists.nil?
+    @attendance_lists = Attendance.where("(request_destination = ?) AND (change = ?)", @user.id, false)
+    if @attendance_lists.nil?
       @attendance_overwork_request_count = "0"
     else
-      @attendance_overwork_request_count = @attendance_overwork_lists.count
+      @attendance_overwork_request_count = @attendance_lists.count
     end
   end
   
