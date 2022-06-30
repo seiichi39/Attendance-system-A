@@ -22,12 +22,19 @@ ActiveRecord::Schema.define(version: 20220620112403) do
     t.datetime "updated_at", null: false
     t.datetime "scheduled_finished_at"
     t.datetime "over_work_time"
-    t.boolean "next_day", default: false
+    t.boolean "overwork_next_day", default: false
+    t.boolean "modification_next_day", default: false
     t.string "business_processing_content"
     t.integer "request_user"
-    t.string "request_status"
-    t.integer "request_destination"
-    t.boolean "change", default: false
+    t.string "overwork_request_status"
+    t.string "modification_request_status"
+    t.string "one_month_request_status"
+    t.integer "overwork_request_destination"
+    t.integer "modification_request_destination"
+    t.integer "one_month_request_destination"
+    t.boolean "modification_change", default: false
+    t.boolean "overwork_change", default: false
+    t.boolean "one_month_change", default: false
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -48,8 +55,8 @@ ActiveRecord::Schema.define(version: 20220620112403) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2022-06-26 23:00:00"
-    t.datetime "work_time", default: "2022-06-26 22:30:00"
+    t.datetime "basic_time", default: "2022-06-29 23:00:00"
+    t.datetime "work_time", default: "2022-06-29 22:30:00"
     t.integer "employee_number"
     t.string "uid"
     t.boolean "superior", default: false

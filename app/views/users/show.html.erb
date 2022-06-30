@@ -131,13 +131,13 @@
           <td><%= format_basic_info(day.over_work_time) if day.over_work_time? %></td>
           <td><%= day.business_processing_content %></td>
           <td>
-            <% if day.request_destination.present? && day.request_status == "申請中" %>
-              <%= User.find_by(id: day.request_destination).name %>に残業申請中。
-            <% elsif day.request_destination.present? && day.request_status == "承認" %>
-              残業申請が<%= day.request_status %>されました。
-            <% elsif day.request_destination.present? && day.request_status == "否認" %>
-              残業申請が<%= day.request_status %>されました。              
-            <% elsif day.request_destination.present? && day.request_status == "なし" %>
+            <% if day.overwork_request_destination.present? && day.overwork_request_status == "申請中" %>
+              <%= User.find_by(id: day.overwork_request_destination).name %>に残業申請中。
+            <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "承認" %>
+              残業申請が<%= day.overwork_request_status %>されました。
+            <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "否認" %>
+              残業申請が<%= day.overwork_request_status %>されました。              
+            <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "なし" %>
               残業申請が取り消されました。
             <% end %>
           </td>                                            

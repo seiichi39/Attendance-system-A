@@ -8,8 +8,10 @@
         <th>曜日</th>
         <th>出社</th>
         <th>退社</th>
+        <th>翌日</th>
         <th>在社時間</th>
         <th>備考</th>
+        <th>指示者確認㊞</th>
       </tr>
     </thead>
     <tbody>
@@ -29,12 +31,16 @@
               <td><%= attendance.time_field :started_at, class: "form-control" %></td>
               <td><%= attendance.time_field :finished_at, class: "form-control" %></td>
             <% end %>
+            <td><%= attendance.check_box :modification_next_day, {}, class: "form-control" %></td>
             <td>
               <% if day.started_at.present? && day.finished_at.present? %>
                 <%= working_times(day.started_at, day.finished_at) %>
               <% end %>
             </td>
             <td><%= attendance.text_field :note, class:"form-control" %></td>
+            <td>
+              <%= attendance.collection_select :modification_request_destination, User.all.where(superior: true).order(:id), :id, :name, prompt: "上長を選択してください。", class: "form-control" %>
+            </td>
           </tr>
         <% end %>
       <% end %>

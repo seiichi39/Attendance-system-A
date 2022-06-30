@@ -60,8 +60,8 @@ class AttendancesController < ApplicationController
   end
 
   def edit_overwork_notice
-    @request_users = User.where(id: Attendance.where(request_destination: @user.id).select(:user_id))
-    @attendance_lists = Attendance.where("(request_destination = ?) AND (change = ?)", @user.id, false)
+    @request_users = User.where(id: Attendance.where(overwork_request_destination: @user.id).select(:user_id))
+    @attendance_lists = Attendance.where("(overwork_request_destination = ?) AND (overwork_change = ?)", @user.id, false)
     @attendance = Attendance.find(params[:id])
   end
 
@@ -69,13 +69,13 @@ class AttendancesController < ApplicationController
     update_judgement = "false"
     overwork_notice_params.each do |id,item|
       attendance = Attendance.find(id)
-      if overwork_notice_params[id][:change] == "true"
-        if overwork_notice_params[id][:request_status] == "承認"
-          attendance.request_status = "承認"
-        elsif overwork_notice_params[id][:request_status] == "否認"
-          attendance.request_status = "否認"
-        else overwork_notice_params[id][:request_status] == "なし" 
-          attendance.request_status = "なし"
+      if overwork_notice_params[id][:overwork_change] == "true"
+        if overwork_notice_params[id][:overwork_request_status] == "承認"
+          attendance.overwork_request_status = "承認"
+        elsif overwork_notice_params[id][:overwork_request_status] == "否認"
+          attendance.overwork_request_status = "否認"
+        else overwork_notice_params[id][:overwork_request_status] == "なし" 
+          attendance.overwork_request_status = "なし"
         end
         attendance.update(item)
         update_judgement = "true"
@@ -95,11 +95,11 @@ class AttendancesController < ApplicationController
     end
 
     def overwork_request_params
-      params.require(:user).permit(attendances: [:scheduled_finished_at, :business_processing_content, :next_day, :request_user, :request_status, :request_destination])[:attendances]
+      params.require(:user).permit(attendances: [:scheduled_finished_at, :business_processing_content, :overwork_next_day, :request_user, :overwork_request_status, :overwork_request_destination])[:attendances]
     end
 
     def overwork_notice_params
-      params.require(:user).permit(attendances: [:scheduled_finished_at, :business_processing_content, :change, :request_status, :over_work_time])[:attendances]
+      params.require(:user).permit(attendances: [:scheduled_finished_at, :business_processing_content, :overwork_change, :overwork_request_status, :over_work_time])[:attendances]
     end
     
 end

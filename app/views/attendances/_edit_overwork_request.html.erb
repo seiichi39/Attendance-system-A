@@ -31,10 +31,12 @@
                       <td><%= l(day.worked_on, format: :short) %></td>
                       <td><%= $days_of_the_week[day.worked_on.wday] %></td>
                       <td><%= attendance.time_field :scheduled_finished_at, class: "form-control" %></td>
-                      <td><%= attendance.check_box :next_day, {}, class: "form-control" %></td>
+                      <td><%= attendance.check_box :overwork_next_day, {}, class: "form-control" %></td>
                       <td><%= attendance.text_field :business_processing_content, class: "form-control" %></td>
-                      <td><%= attendance.collection_select :request_destination, User.all.where(superior: true).order(:id), :id, :name, prompt: "上長を選択してください。", class: "form-control" %></td>
-                      <%= attendance.hidden_field :request_status, value: "申請中" %>
+                      <td>
+                        <%= attendance.collection_select :overwork_request_destination, User.all.where(superior: true).order(:id), :id, :name, prompt: "上長を選択してください。", class: "form-control" %>
+                      </td>
+                      <%= attendance.hidden_field :overwork_request_status, value: "申請中" %>
                       <%= attendance.hidden_field :request_user, value: @user.id %>
                     </tr>
                   <% end %>
