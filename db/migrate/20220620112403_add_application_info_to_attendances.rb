@@ -15,5 +15,12 @@ class AddApplicationInfoToAttendances < ActiveRecord::Migration[5.1]
     add_column :attendances, :modification_change, :boolean, default: false
     add_column :attendances, :overwork_change, :boolean, default: false
     add_column :attendances, :one_month_change, :boolean, default: false
+    add_column :attendances, :before_change_started_at, :datetime
+    add_column :attendances, :before_change_finished_at, :datetime
+    add_column :attendances, :after_change_started_at, :datetime
+    add_column :attendances, :after_change_finished_at, :datetime
+    add_column :attendances, :initial_started_at, :datetime
+    add_column :attendances, :initial_finished_at, :datetime
+    add_column :attendances, :change_attendance_approval_date, :datetime
   end
 end
