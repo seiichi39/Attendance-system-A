@@ -1,0 +1,52 @@
+<% provide(:title, @user.name) %>
+
+<h1>勤怠ログ</h1>
+
+<div class="search-row">
+  <%= form_with(scope: :search, url: attendances_index_attendance_log_user_path(@user), method: :get, local: true) do |f| %>
+    <div class="search-group">
+      <%= f.label(:change_attendance_approval_date, "承認日で検索", class:"label-approval-search") %>
+      <%= f.date_field :change_attendance_approval_date_from %> 〜 <%= f.date_field :change_attendance_approval_date_to %>
+      <span class="search-group-btn">
+        <%= submit_tag '検索', :name => nil, class: "btn btn-primary" %>
+      </span>
+    </div>
+  <% end %>
+</div>
+
+<div>
+  <table class="table table-bordered table-condensed table-hover" id="table-attendances">
+    <thead>
+      <tr>
+        <th>日付</th>
+        <th>変更前出社時間</th>
+        <th>変更前退社時間</th>
+        <th>変更後出社時間</th>
+        <th>変更後退社時間</th>
+        <th>指示者</th>
+        <th>承認日</th>
+      </tr>
+    </thead>
+    <tbody class="line">
+      <% @attendance_lists.each do |work_day| %>
+        <tr>
+          <td><%= l(work_day.worked_on, format: :short) %></td>
+          <% if work_day.initial_started_at.nil? %>
+            <td></td>
+          <% else %>
+            <td><%= l(work_day.initial_started_at, format: :time) %></td>
+          <% end %>
+          <% if work_day.initial_finished_at.nil? %>
+            <td></td>
+          <% else %>
+            <td><%= l(work_day.initial_finished_at, format: :time) %></td>
+          <% end %>          
+          <td><%= l(work_day.after_change_started_at, format: :time) %></td>
+          <td><%= l(work_day.after_change_finished_at, format: :time) %></td>
+          <td><%= User.find_by(id: work_day.modification_request_destination).name %></td>
+          <td><%= l(work_day.change_attendance_approval_date, format: :short2) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

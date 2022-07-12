@@ -1,5 +1,5 @@
 <% provide(:title, @user.name) %>
-<%= form_with(model: @user, url: attendances_update_attendance_change_user_path(date: @first_day), local: true, method: :patch) do |f| %>
+<%= form_with(model: @user, url: attendances_update_attendance_change_request_user_path(date: @first_day), local: true, method: :patch) do |f| %>
 <div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
@@ -22,6 +22,33 @@
                        end %>
         <%= f.fields_for "attendances[]", work_day do |attendance| %>
           <tr>
+            <%= attendance.hidden_field :modification_request_status, value: "申請中" %>
+            <!--出社時間に対しての対応-->
+            <% if work_day.after_change_started_at.nil? %>
+              <%= attendance.hidden_field :before_change_started_at, value: work_day.started_at %> 
+              <%= attendance.hidden_field :initial_started_at, value: work_day.started_at %>
+            <% elsif work_day.after_change_started_at.present? && work_day.modification_request_status == "否認" %>
+              <%= attendance.hidden_field :before_change_started_at, value: work_day.started_at %>
+              <%= attendance.hidden_field :initial_started_at, value: work_day.started_at %> 
+            <% else %>
+              <%= attendance.hidden_field :before_change_started_at, value: work_day.after_change_started_at %>
+              <% if work_day.initial_started_at.nil? %>
+                <%= attendance.hidden_field :initial_started_at, value: work_day.after_change_started_at %>
+              <% end %>
+            <% end %>
+            <!--退社時間に対しての対応-->
+            <% if work_day.after_change_finished_at.nil? %>
+              <%= attendance.hidden_field :before_change_finished_at, value: work_day.finished_at %>
+              <%= attendance.hidden_field :initial_finished_at, value: work_day.finished_at %>
+            <% elsif work_day.after_change_finished_at.present? && work_day.modification_request_status == "否認" %>
+              <%= attendance.hidden_field :before_change_finished_at, value: work_day.finished_at %>
+              <%= attendance.hidden_field :initial_finished_at, value: work_day.finished_at %>
+            <% else %>
+              <%= attendance.hidden_field :before_change_finished_at, value: work_day.after_change_finished_at %>
+              <% if work_day.initial_finished_at.nil? %>
+                <%= attendance.hidden_field :initial_finished_at, value: work_day.after_change_finished_at %>
+              <% end %>
+            <% end %>
             <td><%= l(work_day.worked_on, format: :short) %></td>
             <td class = "<%= css_class %>"><%= $days_of_the_week[work_day.worked_on.wday] %></td>
             <% if Date.current < work_day.worked_on %>

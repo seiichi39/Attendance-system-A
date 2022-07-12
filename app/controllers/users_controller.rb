@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
   # before_action :admin_or_correct_user, only: :show
-  before_action :set_one_month
+  before_action :set_one_month, only: :show
   
   def index
     @users = User.paginate(page: params[:page]).search(params[:search]).order(id: "ASC")
@@ -13,11 +13,17 @@ class UsersController < ApplicationController
   
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
-    @attendance_lists = Attendance.where("(overwork_request_destination = ?) AND (overwork_change = ?)", @user.id, false)
-    if @attendance_lists.nil?
+    @attendance_overwork_lists = Attendance.where("(overwork_request_destination = ?) AND (overwork_request_status = ?)", @user.id, "申請中")
+    if @attendance_overwork_lists.nil?
       @attendance_overwork_request_count = "0"
     else
-      @attendance_overwork_request_count = @attendance_lists.count
+      @attendance_overwork_request_count = @attendance_overwork_lists.count
+    end
+    @attendance_modification_lists = Attendance.where("(modification_request_destination = ?) AND (modification_request_status = ?)", @user.id, "申請中")
+    if @attendance_modification_lists.nil?
+      @attendance_modification_request_count = "0"
+    else
+      @attendance_modification_request_count = @attendance_modification_lists.count
     end
   end
   

@@ -28,12 +28,18 @@
 <% if current_user?(@user) %>
   <div>
     <div>
-      <%= link_to "【所属長承認申請のお知らせ】", attendances_edit_attendance_change_user_path(date: @first_day) %>
+      <%= link_to "【所属長承認申請のお知らせ】", attendances_edit_attendance_change_request_user_path(date: @first_day) %>
       ２件のお知らせがあります
     </div>
     <div>
-      <%= link_to "【勤怠変更申請のお知らせ】", attendances_edit_attendance_change_user_path(date: @first_day) %>
-      ２件のお知らせがあります
+      <% if @user.superior? %>
+        <% if @attendance_modification_request_count == 0 %>
+        【勤怠変更申請のお知らせ】
+        <% else %>
+          <%= link_to "【勤怠変更申請のお知らせ】", attendances_edit_attendance_change_notice_user_path(@user), remote: true, class:"request-area" %>
+          <div class="request-area"><%= @attendance_modification_request_count %>件のお知らせがあります</div>
+        <% end %>
+      <% end %>
     </div>
     <div>
       <% if @user.superior? %>
@@ -48,11 +54,11 @@
   </div>
   <div class="button-area">
     <div>
-      <%= link_to "勤怠を編集", attendances_edit_attendance_change_user_path(date: @first_day), class:"btn btn-primary" %>
-      <%= link_to "CSVを出力", attendances_edit_attendance_change_user_path(date: @first_day), class:"btn btn-primary" %>
+      <%= link_to "勤怠を編集", attendances_edit_attendance_change_request_user_path(date: @first_day), class:"btn btn-primary" %>
+      <%= link_to "CSVを出力", attendances_edit_attendance_change_request_user_path(date: @first_day), class:"btn btn-primary" %>
     </div>
     <div>
-      <%= link_to "勤怠修正ログ(承認済み)", attendances_edit_attendance_change_user_path(date: @first_day), class:"btn btn-primary" %>
+      <%= link_to "勤怠修正ログ(承認済み)", attendances_index_attendance_log_user_path(@user), class:"btn btn-primary" %>
     </div>
   </div>
 <% end %>
@@ -140,6 +146,15 @@
             <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "なし" %>
               残業申請が取り消されました。
             <% end %>
+            <% if day.modification_request_destination.present? && day.modification_request_status == "申請中" %>
+              <%= User.find_by(id: day.modification_request_destination).name %>に勤怠変更申請中。
+            <% elsif day.modification_request_destination.present? && day.modification_request_status == "承認" %>
+              勤怠変更申請が<%= day.modification_request_status %>されました。
+            <% elsif day.modification_request_destination.present? && day.modification_request_status == "否認" %>
+              勤怠変更申請が<%= day.modification_request_status %>されました。              
+            <% elsif day.modification_request_destination.present? && day.modification_request_status == "なし" %>
+              勤怠変更申請が取り消されました。
+            <% end %>
           </td>                                            
         </tr>
       <% end %>  
@@ -164,7 +179,7 @@
           <td colspan="1">上司A</td>
         </tr>
         <tr>
-          <td colspan="1"><%= link_to "申請", attendances_edit_attendance_change_user_path(date: @first_day), class:"btn btn-primary btn-attendance" %>
+          <td colspan="1"><%= link_to "申請", attendances_edit_attendance_change_request_user_path(date: @first_day), class:"btn btn-primary btn-attendance" %>
         </td>
       <% end %>
     </tfoot>
@@ -172,3 +187,4 @@
 
   <div id="edit-overwork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
   <div id="edit-overwork-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+  <div id="edit-attendance-change-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

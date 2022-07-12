@@ -1,0 +1,90 @@
+<% provide(:class_text, 'attendance-change-notice') %>
+<% provide(:button_text, '変更を送信する') %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <% @request_users.each do |user| %>
+    <div class="modal-body">
+      <%= form_with(model: @user, url: attendances_update_attendance_change_notice_user_path(@user, @attendance), local: true, method: :patch) do |f| %>
+      <%= render 'shared/error_messages', object: @attendance %>
+        <table class="table table-bordered table-condensed table-hover" id="table-attendance-change-notice">
+          <h1 class="modal-title">【<%= user.name %>からの勤怠変更申請】</h1>
+            <thead class="attendance-change-request">
+              <tr>
+                <th rowspan="3">日付</th>
+                <th rowspan="3">曜日</th>
+                <th rowspan="1" colspan="4">変更前</th>
+                <th rowspan="1" colspan="4">変更後</th>
+                <th rowspan="3">備考</th>
+                <th rowspan="3">指示者確認㊞</th>
+                <th rowspan="3">変更</th>
+                <th rowspan="3">勤怠を確認する</th>
+              </tr>
+              <tr>
+                <th rowspan="1" colspan="2">出社</th>
+                <th rowspan="1" colspan="2">退社</th>
+                <th rowspan="1" colspan="2">出社</th>
+                <th rowspan="1" colspan="2">退社</th>
+              </tr>
+              <tr>
+                <th rowspan="1">時</th>
+                <th rowspan="1">分</th>
+                <th rowspan="1">時</th>
+                <th rowspan="1">分</th>
+                <th rowspan="1">時</th>
+                <th rowspan="1">分</th>
+                <th rowspan="1">時</th>
+                <th rowspan="1">分</th>
+              </tr>
+            </thead>
+            <tbody class="line">
+              <% @attendance_lists.where(user_id: user.id).each do |work_day| %>
+                <%= f.fields_for "attendances[]", work_day do |attendance| %>
+                  <tr>
+                    <td><%= l(work_day.worked_on, format: :short) %></td>
+                    <td><%= $days_of_the_week[work_day.worked_on.wday] %></td>
+                    <% if work_day.before_change_started_at.nil? %>
+                      <td></td>
+                      <td></td>
+                    <% else %>
+                      <td><%= l(work_day.before_change_started_at, format: :hour) %></td>
+                      <td><%= l(work_day.before_change_started_at, format: :min) %></td>
+                    <% end %>
+                    <% if work_day.before_change_finished_at.nil? %>
+                      <td></td>
+                      <td></td>
+                    <% else %>
+                      <td><%= l(work_day.before_change_finished_at, format: :hour) %></td>
+                      <td><%= l(work_day.before_change_finished_at, format: :min) %></td>
+                    <% end %>
+                    <td><%= l(work_day.after_change_started_at, format: :hour) %></td>
+                    <td><%= l(work_day.after_change_started_at, format: :min) %></td>
+                    <td><%= l(work_day.after_change_finished_at, format: :hour) %></td>
+                    <td><%= l(work_day.after_change_finished_at, format: :min) %></td>
+                    <td><%= work_day.note %></td>
+                    <td>
+                      <%= attendance.select :modification_request_status, [['なし'], ['申請中'], ['承認'], ['否認']], { selected: work_day.modification_request_status } %>
+                    </td>
+                    <td><%= attendance.check_box :modification_change, {class: "change"}, 'true', 'false' %></td>
+                    <td><%= link_to "確認", user_path(user), class: "btn btn-primary" %></td>
+                    <%= attendance.hidden_field :started_at, value: work_day.after_change_started_at %>
+                    <%= attendance.hidden_field :finished_at, value: work_day.after_change_finished_at %>
+                    <%= attendance.hidden_field :change_attendance_approval_date, value: Date.today %>
+                  </tr>
+                <% end %>
+              <% end %> 
+            </tbody>                   
+          </table>
+          <div class="center">
+            <%= f.submit yield(:button_text), class: "btn btn-primary btn-block btn-#{yield(:class_text)}" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
