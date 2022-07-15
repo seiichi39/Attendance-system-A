@@ -22,6 +22,10 @@ Rails.application.routes.draw do
         get 'attendances/edit_overwork_notice'
         patch 'attendances/update_overwork_notice'
         get 'attendances/index_attendance_log'
+        get 'attendances/edit_one_month_request'
+        patch 'attendances/update_one_month_request'
+        get 'attendances/edit_one_month_notice'
+        patch 'attendances/update_one_month_notice'
       end
       collection do
         get 'go_work'
