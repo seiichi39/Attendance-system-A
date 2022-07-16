@@ -5,6 +5,7 @@ class AttendancesController < ApplicationController
   before_action :logged_in_user, only: [:update, :edit_attendance_change_request, :update_attendance_change_request]
   before_action :admin_or_correct_user, only: [:update, :edit_attendance_change_request, :update_attendance_change_request]
   before_action :set_one_month, only: [:edit_attendance_change_request, :edit_overwork_request, :edit_one_month_request]
+  before_action :non_admin_user, only: :edit_one_month_request
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。" 
   

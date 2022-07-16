@@ -31,6 +31,13 @@ class ApplicationController < ActionController::Base
       redirect_to current_user
     end
   end
+
+  def non_admin_user
+    if current_user.admin?
+      redirect_to root_path
+      flash[:danger] = "指定のページは表示できません"
+    end
+  end
   
   def set_one_month 
     @first_day = params[:date].nil? ? Date.current.beginning_of_month : params[:date].to_date

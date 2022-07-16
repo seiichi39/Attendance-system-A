@@ -11,7 +11,6 @@ Rails.application.routes.draw do
 
   resources :users do
       member do
-        get 'edit_basic_info'
         patch 'update_basic_info'
         get 'attendances/edit_attendance_change_request'
         patch 'attendances/update_attendance_change_request'
@@ -30,6 +29,7 @@ Rails.application.routes.draw do
       collection do
         get 'go_work'
         post :import
+        get 'edit_basic_info'
       end
       resources :attendances, only: :update
     end
