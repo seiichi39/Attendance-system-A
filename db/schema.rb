@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20220620112403) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "scheduled_finished_at"
-    t.datetime "over_work_time"
+    t.float "over_work_time"
     t.boolean "overwork_next_day", default: false
     t.boolean "modification_next_day", default: false
     t.string "business_processing_content"
@@ -62,8 +62,8 @@ ActiveRecord::Schema.define(version: 20220620112403) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2022-07-14 23:00:00"
-    t.datetime "work_time", default: "2022-07-14 22:30:00"
+    t.datetime "basic_time", default: "2022-07-18 23:00:00"
+    t.datetime "work_time", default: "2022-07-18 22:30:00"
     t.integer "employee_number"
     t.string "uid"
     t.boolean "superior", default: false

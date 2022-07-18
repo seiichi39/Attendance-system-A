@@ -49,8 +49,11 @@
                 <%= attendance.hidden_field :initial_finished_at, value: work_day.after_change_finished_at %>
               <% end %>
             <% end %>
+            <!--日付-->
             <td><%= l(work_day.worked_on, format: :short) %></td>
+            <!--曜日-->
             <td class = "<%= css_class %>"><%= $days_of_the_week[work_day.worked_on.wday] %></td>
+            <!--出社・退社時間 ※ 先日付は読み取り専用-->
             <% if Date.current < work_day.worked_on %>
               <td><%= attendance.time_field :started_at, readonly: true, class: "form-control" %></td>
               <td><%= attendance.time_field :finished_at, readonly: true, class: "form-control" %></td>

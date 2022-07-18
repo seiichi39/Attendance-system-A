@@ -25,6 +25,7 @@ Rails.application.routes.draw do
         patch 'attendances/update_one_month_request'
         get 'attendances/edit_one_month_notice'
         patch 'attendances/update_one_month_notice'
+        get 'attendances/new'
       end
       collection do
         get 'go_work'

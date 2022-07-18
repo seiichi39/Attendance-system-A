@@ -17,18 +17,21 @@ class ApplicationController < ActionController::Base
   end  
 
   def correct_user
-    redirect_to current_user unless current_user?(@user)
+    redirect_to attendances_edit_one_month_request_user_path(current_user) unless current_user?(@user)
   end
   
   def admin_user
-    redirect_to current_user unless current_user.admin?
+    unless current_user.admin?
+      redirect_to attendances_edit_one_month_request_user_path(current_user)
+      flash[:danger] = "権限がありません"
+    end
   end
   
   def admin_or_correct_user
     @user = User.find(params[:user_id]) if @user.blank?
     unless current_user?(@user) || current_user.admin?
       flash[:danger] = "権限がありません"
-      redirect_to current_user
+      redirect_to attendances_edit_one_month_request_user_path(current_user)
     end
   end
 
@@ -57,4 +60,5 @@ class ApplicationController < ActionController::Base
     flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
     redirect_to root_url
   end
+
 end

@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
-  before_action :set_user,only:[:show, :edit, :update, :destroy, :update_basic_info]
+  before_action :set_user, only:[:show, :edit, :update, :destroy, :update_basic_info]
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :update_basic_info]
   before_action :correct_user, only: [:edit, :update]
-  before_action :admin_user, only: [:index, :destroy, :update_basic_info]
+  before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :go_work]
   # before_action :admin_or_correct_user, only: :show
   before_action :set_one_month, only: :show
   
@@ -36,7 +36,7 @@ class UsersController < ApplicationController
     if @user.save
       log_in @user
       flash[:success] = '新規作成に成功しました'
-      redirect_to @user
+      redirect_to attendances_edit_one_month_request_user_path(current_user)
     else
       render :new
     end
@@ -48,7 +48,7 @@ class UsersController < ApplicationController
   def update
     if @user.update_attributes(user_params)
       flash[:success] = "ユーザー情報を更新しました。"
-      redirect_to @user
+      redirect_to attendances_edit_one_month_request_user_path(current_user)
     else
       render :edit
     end

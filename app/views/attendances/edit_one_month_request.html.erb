@@ -61,7 +61,7 @@
   <div class="button-area">
     <div>
       <%= link_to "勤怠を編集", attendances_edit_attendance_change_request_user_path(date: @first_day), class:"btn btn-primary" %>
-      <%= link_to "CSVを出力", attendances_edit_attendance_change_request_user_path(date: @first_day), class:"btn btn-primary" %>
+      <%= link_to "CSVを出力", attendances_new_user_path(format: :csv, date: params[:date]), class:"btn btn-primary" %>
     </div>
     <div>
       <%= link_to "勤怠修正ログ(承認済み)", attendances_index_attendance_log_user_path(@user), class:"btn btn-primary" %>
@@ -112,16 +112,16 @@
             <% end %>
           </td>
           <td><%= l(day.worked_on, format: :short) %></td>
-            <td class = "<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
-            <td><%= day.started_at.floor_to(15.minutes).hour if day.started_at.present? %></td>
-            <td><%= day.started_at.floor_to(15.minutes).min if day.started_at.present? %></td>
-            <td>
-              <% if current_user?(@user) %>
-                <% if (Date.current == day.worked_on) && day.started_at.nil? %>
-                  <%= link_to "出社", user_attendance_path(@user, day), method: :patch, class:"btn btn-primary btn-attendance" %>
-                <% end %>
+          <td class = "<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
+          <td><%= day.started_at.floor_to(15.minutes).hour if day.started_at.present? %></td>
+          <td><%= day.started_at.floor_to(15.minutes).min if day.started_at.present? %></td>
+          <td>
+            <% if current_user?(@user) %>
+              <% if (Date.current == day.worked_on) && day.started_at.nil? %>
+                <%= link_to "出社", user_attendance_path(@user, day), method: :patch, class:"btn btn-primary btn-attendance" %>
               <% end %>
-            </td>
+            <% end %>
+          </td>
           <td><%= day.finished_at.floor_to(15.minutes).hour if day.finished_at.present? %></td>
           <td><%= day.finished_at.floor_to(15.minutes).min if day.finished_at.present? %></td>
           <td>
@@ -140,7 +140,7 @@
           <td><%= day.note %></td>
           <td><%= l(day.scheduled_finished_at, format: :hour) if day.scheduled_finished_at? %></td>
           <td><%= l(day.scheduled_finished_at, format: :min) if day.scheduled_finished_at? %></td>
-          <td><%= format_basic_info(day.over_work_time) if day.over_work_time? %></td>
+          <td><%= day.over_work_time if day.over_work_time? %></td>
           <td><%= day.business_processing_content %></td>
           <td>
             <% if day.overwork_request_destination.present? && day.overwork_request_status == "申請中" %>
@@ -149,7 +149,7 @@
               残業申請が<%= day.overwork_request_status %>されました。
             <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "否認" %>
               残業申請が<%= day.overwork_request_status %>されました。              
-            <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "なし" %>
+            <% elsif day.overwork_request_status == "なし" %>
               残業申請が取り消されました。
             <% end %>
             <% if day.modification_request_destination.present? && day.modification_request_status == "申請中" %>
@@ -158,7 +158,7 @@
               勤怠変更申請が<%= day.modification_request_status %>されました。
             <% elsif day.modification_request_destination.present? && day.modification_request_status == "否認" %>
               勤怠変更申請が<%= day.modification_request_status %>されました。              
-            <% elsif day.modification_request_destination.present? && day.modification_request_status == "なし" %>
+            <% elsif day.modification_request_status == "なし" %>
               勤怠変更申請が取り消されました。
             <% end %>
           </td>                                            
@@ -190,11 +190,13 @@
           <% else %>
             <div><%= User.find_by(id: @attendance.one_month_request_destination).name %>に<%= @attendance.one_month_request_status %>されました</div>
           <% end %>
-          <%= form_with(model: @user, url: attendances_update_one_month_request_user_path(@attendance), local: true, method: :patch) do |f| %>
-            <%= f.fields_for "attendances[]", @attendance do |attendance| %>
-              <div><%= attendance.collection_select :one_month_request_destination, User.all.where(superior: true).where.not(id: current_user.id).order(:id), :id, :name, prompt: "上長を選択してください。", class: "form-control" %></div>
-              <div class="btn-one-month"><%= f.submit "申請", class: "btn btn-lg btn-primary" %></div>
-              <%= attendance.hidden_field :one_month_request_status, value: "申請中" %>
+          <% if current_user?(@user) %>
+            <%= form_with(model: @user, url: attendances_update_one_month_request_user_path(@user), local: true, method: :patch) do |f| %>
+              <%= f.fields_for "attendances[]", @attendance do |attendance| %>
+                <div><%= attendance.collection_select :one_month_request_destination, User.all.where(superior: true).where.not(id: current_user.id).order(:id), :id, :name, prompt: "上長を選択してください。", class: "form-control" %></div>
+                <div class="btn-one-month"><%= f.submit "申請", class: "btn btn-lg btn-primary" %></div>
+                <%= attendance.hidden_field :one_month_request_status, value: "申請中" %>
+              <% end %>
             <% end %>
           <% end %>
         </td>
