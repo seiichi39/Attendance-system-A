@@ -5,7 +5,7 @@ class AttendancesController < ApplicationController
   before_action :logged_in_user, only: [:update, :edit_attendance_change_request, :update_attendance_change_request]
   before_action :admin_or_correct_user, only: [:update, :edit_attendance_change_request, :update_attendance_change_request]
   before_action :set_one_month, only: [:edit_attendance_change_request, :edit_overwork_request, :edit_overwork_notice, :edit_one_month_request]
-  before_action :non_admin_user, only: :edit_one_month_request
+  before_action :non_admin_user, only: [:edit_one_month_request, :edit_attendance_change_request]
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。" 
 
@@ -120,8 +120,10 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do
       attendance_change_request_params.each do |id, item|
         attendance = Attendance.find(id)
-        unless attendance.after_change_started_at.to_time == item[:after_change_started_at]
-          attendance.update_attributes!(item)
+        unless attendance.after_change_started_at.present? && attendance.after_change_finished_at.present? && item[:modification_request_destination].blank?
+          unless attendance.modification_request_status == "なし" && item[:after_change_started_at].blank? && item[:after_change_finished_at].blank?
+            attendance.update_attributes!(item)
+          end
         end
       end
     end
@@ -156,6 +158,7 @@ class AttendancesController < ApplicationController
           item[:before_change_started_at] = nil
           item[:before_change_finished_at] = nil
           item[:after_change_started_at] = nil
+          item[:after_change_finished_at] = nil
           item[:modification_request_destination] = nil
           item[:change_attendance_approval_date] = nil
         else

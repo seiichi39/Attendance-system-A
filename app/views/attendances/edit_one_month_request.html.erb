@@ -138,29 +138,33 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
-          <td><%= l(day.scheduled_finished_at, format: :hour) if day.scheduled_finished_at? %></td>
-          <td><%= l(day.scheduled_finished_at, format: :min) if day.scheduled_finished_at? %></td>
+          <td><%= l(day.scheduled_finished_at.floor_to(15.minutes), format: :hour) if day.scheduled_finished_at? %></td>
+          <td><%= l(day.scheduled_finished_at.floor_to(15.minutes), format: :min) if day.scheduled_finished_at? %></td>
           <td><%= day.over_work_time if day.over_work_time? %></td>
           <td><%= day.business_processing_content %></td>
           <td>
-            <% if day.overwork_request_destination.present? && day.overwork_request_status == "申請中" %>
-              <%= User.find_by(id: day.overwork_request_destination).name %>に残業申請中。
-            <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "承認" %>
-              残業申請が<%= day.overwork_request_status %>されました。
-            <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "否認" %>
-              残業申請が<%= day.overwork_request_status %>されました。              
-            <% elsif day.overwork_request_status == "なし" %>
-              残業申請が取り消されました。
-            <% end %>
-            <% if day.modification_request_destination.present? && day.modification_request_status == "申請中" %>
-              <%= User.find_by(id: day.modification_request_destination).name %>に勤怠変更申請中。
-            <% elsif day.modification_request_destination.present? && day.modification_request_status == "承認" %>
-              勤怠変更申請が<%= day.modification_request_status %>されました。
-            <% elsif day.modification_request_destination.present? && day.modification_request_status == "否認" %>
-              勤怠変更申請が<%= day.modification_request_status %>されました。              
-            <% elsif day.modification_request_status == "なし" %>
-              勤怠変更申請が取り消されました。
-            <% end %>
+            <div>
+              <% if day.overwork_request_destination.present? && day.overwork_request_status == "申請中" %>
+                <%= User.find_by(id: day.overwork_request_destination).name %>に残業申請中。
+              <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "承認" %>
+                残業申請が<%= day.overwork_request_status %>されました。
+              <% elsif day.overwork_request_destination.present? && day.overwork_request_status == "否認" %>
+                残業申請が<%= day.overwork_request_status %>されました。              
+              <% elsif day.overwork_request_status == "なし" %>
+                残業申請が取り消されました。
+              <% end %>
+            </div>
+            <div>
+              <% if day.modification_request_destination.present? && day.modification_request_status == "申請中" %>
+                <%= User.find_by(id: day.modification_request_destination).name %>に勤怠変更申請中。
+              <% elsif day.modification_request_destination.present? && day.modification_request_status == "承認" %>
+                勤怠変更申請が<%= day.modification_request_status %>されました。
+              <% elsif day.modification_request_destination.present? && day.modification_request_status == "否認" %>
+                勤怠変更申請が<%= day.modification_request_status %>されました。              
+              <% elsif day.modification_request_status == "なし" %>
+                勤怠変更申請が取り消されました。
+              <% end %>
+            </div>
           </td>                                            
         </tr>
       <% end %>  
@@ -193,7 +197,7 @@
           <% if current_user?(@user) %>
             <%= form_with(model: @user, url: attendances_update_one_month_request_user_path(@user), local: true, method: :patch) do |f| %>
               <%= f.fields_for "attendances[]", @attendance do |attendance| %>
-                <div><%= attendance.collection_select :one_month_request_destination, User.all.where(superior: true).where.not(id: current_user.id).order(:id), :id, :name, prompt: "上長を選択してください。", class: "form-control" %></div>
+                <div><%= attendance.collection_select :one_month_request_destination, User.all.where(superior: true).where.not(id: current_user.id).order(:id), :id, :name, {include_blank: "上長を選択してください", selected: nil}, {class: "form-control"} %></div>
                 <div class="btn-one-month"><%= f.submit "申請", class: "btn btn-lg btn-primary" %></div>
                 <%= attendance.hidden_field :one_month_request_status, value: "申請中" %>
               <% end %>

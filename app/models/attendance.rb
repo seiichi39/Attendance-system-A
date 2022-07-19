@@ -45,7 +45,7 @@ class Attendance < ApplicationRecord
 
   # 変更する退社時間が、変更する出社時間よりも前の場合、申請を無効とする。
   def after_change_started_at_than_after_change_finished_at_fast_if_invalid
-    if after_change_started_at.present? && after_change_finished_at.present?
+    if after_change_started_at.present? && after_change_finished_at.present? && (modification_next_day == false)
       errors.add(:after_change_started_at, "より早い退勤時間は無効です") if after_change_started_at > after_change_finished_at
     end
   end

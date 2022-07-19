@@ -12,7 +12,7 @@
     <div class="modal-body">
       <%= form_with(model: @user, url: attendances_update_one_month_notice_user_path(@user, @attendance), local: true, method: :patch) do |f| %>
       <%= render 'shared/error_messages', object: @attendance %>
-        <table class="table table-bordered table-condensed table-hover" id="table-attendance-change-notice">
+        <table class="table table-bordered table-condensed table-hover" id="table-attendances">
           <h1 class="modal-title">【<%= user.name %>からの勤怠申請】</h1>
             <thead class="attendance-change-request">
               <tr>
@@ -31,7 +31,7 @@
                       <%= attendance.select :one_month_request_status, [['なし'], ['申請中'], ['承認'], ['否認']], { selected: work_day.one_month_request_status } %>
                     </td>
                     <td><%= attendance.check_box :one_month_change, {class: "change"}, 'true', 'false' %></td>
-                    <td><%= link_to "確認", attendances_edit_one_month_request_user_path(user, date: work_day.worked_on), class: "btn btn-primary" %></td>
+                    <td><%= link_to "確認", attendances_edit_one_month_request_user_path(user, date: work_day.worked_on.beginning_of_month), class: "btn btn-primary" %></td>
                   </tr>
                 <% end %>
               <% end %> 

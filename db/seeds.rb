@@ -27,17 +27,8 @@ User.create!(name: "上長B",
             designed_work_start_time: "2022-06-27 09:00:00",
             designed_work_end_time: "2022-06-27 18:00:00")
 
-User.create!(name: "上長C",
+User.create!(name: "一般C",
             email: "samplec@email.com",
-            password: "password",
-            password_confirmation: "password",
-            superior: true,
-            basic_work_time: "2022-06-27 08:00:00",
-            designed_work_start_time: "2022-06-27 09:00:00",
-            designed_work_end_time: "2022-06-27 18:00:00")
-
-User.create!(name: "一般D",
-            email: "sampled@email.com",
             password: "password",
             password_confirmation: "password",
             superior: false,

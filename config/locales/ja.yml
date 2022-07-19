@@ -205,9 +205,10 @@ ja:
       default: "%Y年%m月%d日(%a) %H時%M分%S秒 %z"
       long: "%Y/%m/%d %H:%M"
       short: "%m/%d %H:%M"
-      short2: "%m/%d"
+      short2: "%-m/%-d"
       month: "%m"
       time: "%H:%M"
+      time2: "%H:%M:%S.000"
       hour: "%H"
       min: "%M"
     pm: 午後

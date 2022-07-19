@@ -38,7 +38,7 @@
                       <td><%= attendance.check_box :overwork_next_day, {}, "true", "false" %></td>
                       <td><%= attendance.text_field :business_processing_content, class: "form-control" %></td>
                       <td>
-                        <%= attendance.collection_select :overwork_request_destination, User.all.where(superior: true).where.not(id: current_user.id).order(:id), :id, :name, prompt: "上長を選択してください。", class: "form-control" %>
+                        <%= attendance.collection_select :overwork_request_destination, User.all.where(superior: true).where.not(id: current_user.id).order(:id), :id, :name, {include_blank: "上長を選択してください", selected: nil}, {class: "form-control"} %>
                       </td>
                       <%= attendance.hidden_field :worked_on, value: work_day.worked_on %>
                       <%= attendance.hidden_field :over_work_time, value: work_day.over_work_time %>
