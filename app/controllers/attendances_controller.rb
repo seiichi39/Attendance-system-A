@@ -279,7 +279,7 @@ class AttendancesController < ApplicationController
   
   def index_attendance_log
     @q = Attendance.ransack(params[:q])
-    @attendance_lists = @q.result(distinct: true).where(user_id: @user.id).where(modification_request_status: "承認")
+    @attendance_lists = @q.result(distinct: true).where(user_id: @user.id).where(modification_request_status: "承認").order(worked_on: "ASC")
     @attendance = Attendance.new
   end
   
