@@ -17,7 +17,7 @@ class AttendancesController < ApplicationController
     @last_day = @first_day.end_of_month
     one_month = [*@first_day..@last_day]
     @attendance = Attendance.new
-    @attendances = Attendance.where(user_id: @user.id).where(worked_on: one_month)
+    @attendances = Attendance.where(user_id: @user.id).where(worked_on: one_month).order(worked_on: "ASC")
     respond_to do |format|
       format.html
       format.csv do |csv|
