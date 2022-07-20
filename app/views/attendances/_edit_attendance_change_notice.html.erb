@@ -72,6 +72,7 @@
                     </td>
                     <td><%= attendance.check_box :modification_change, {class: "change"}, 'true', 'false' %></td>
                     <td><%= link_to "確認", attendances_edit_one_month_request_user_path(user, date: work_day.worked_on.beginning_of_month), class: "btn btn-primary" %></td>
+                    <%= attendance.hidden_field :worked_on, value: work_day.worked_on %>
                     <%= attendance.hidden_field :started_at, value: work_day.after_change_started_at %>
                     <%= attendance.hidden_field :finished_at, value: work_day.after_change_finished_at %>
                     <%= attendance.hidden_field :change_attendance_approval_date, value: Date.today %>

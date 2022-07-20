@@ -23,6 +23,7 @@
         <%= f.fields_for "attendances[]", work_day do |attendance| %>
           <tr>
             <%= attendance.hidden_field :modification_request_status, value: "申請中" %>
+            <%= attendance.hidden_field :worked_on, value: work_day.worked_on %>
             <!--出社時間に対しての対応-->
             <!--変更後出社時間が未入力(初回)の場合は変更前・初期出社時間に出社時間をセットする-->
             <!--”承認”後の場合は変更前出社時間に変更後出社時間、"なし"後の場合は変更前出社時間に出社時間をセットする-->
@@ -59,7 +60,7 @@
               <td><%= attendance.time_field :after_change_started_at, class: "form-control" %></td>
               <td><%= attendance.time_field :after_change_finished_at, class: "form-control" %></td>
             <% end %>
-            <td><%= attendance.check_box :modification_next_day, {}, class: "form-control" %></td>
+            <td><%= attendance.check_box :modification_next_day, {}, "true", "false" %></td>
             <td>
               <% if work_day.started_at.present? && work_day.finished_at.present? %>
                 <%= working_times(work_day.started_at, work_day.finished_at) %>

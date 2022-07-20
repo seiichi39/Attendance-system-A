@@ -122,15 +122,35 @@ class AttendancesController < ApplicationController
         attendance = Attendance.find(id)
         unless attendance.after_change_started_at.present? && attendance.after_change_finished_at.present? && item[:modification_request_destination].blank?
           unless attendance.modification_request_status == "なし" && item[:after_change_started_at].blank? && item[:after_change_finished_at].blank?
+            if item[:after_change_finished_at].present? && item[:after_change_started_at].present?
+              if item[:modification_next_day] == "true"
+                year = (item[:worked_on].to_date + 1).year 
+                month = (item[:worked_on].to_date + 1).month
+                day = (item[:worked_on].to_date + 1).day 
+              else
+                year = (item[:worked_on].to_date).year 
+                month = (item[:worked_on].to_date).month
+                day = (item[:worked_on].to_date).day
+              end
+              hour = (item[:after_change_finished_at].to_time).hour
+              min = (item[:after_change_finished_at].to_time).min
+              year1 = (item[:worked_on].to_date).year 
+              month1 = (item[:worked_on].to_date).month
+              day1 = (item[:worked_on].to_date).day
+              hour1 = (item[:after_change_started_at].to_time).hour
+              min1 = (item[:after_change_started_at].to_time).min
+              item[:after_change_finished_at] = Time.new(year, month, day, hour, min, 0,).to_time
+              item[:after_change_started_at] = Time.new(year1, month1, day1, hour1, min1, 0,).to_time
+            end
             attendance.update_attributes!(item)
           end
         end
       end
     end
-    flash[:success] = "１ヶ月分の勤怠情報を申請しました。"
+    flash[:success] = "勤怠変更情報を申請しました。"
     redirect_to attendances_edit_one_month_request_user_path(current_user)
   rescue ActiveRecord::RecordInvalid
-    flash[:danger] = "無効な入力データがあったため、更新をキャンセルしました。"
+    flash[:danger] = "無効な入力データがあったため、申請をキャンセルしました。"
     redirect_to attendances_edit_one_month_request_user_path(current_user)
   end
 
@@ -161,6 +181,8 @@ class AttendancesController < ApplicationController
           item[:after_change_finished_at] = nil
           item[:modification_request_destination] = nil
           item[:change_attendance_approval_date] = nil
+          item[:modification_next_day] = nil
+          item[:note] = nil
         else
         end
         item[:modification_change] = "false"
@@ -197,7 +219,7 @@ class AttendancesController < ApplicationController
           min = (overwork_request_params[id][:scheduled_finished_at].to_time).min
           year1 = (overwork_request_params[id][:worked_on].to_date).year  
           month1 = (overwork_request_params[id][:worked_on].to_date).month
-          day1 = (overwork_request_params[id][:worked_on].to_datetime).day
+          day1 = (overwork_request_params[id][:worked_on].to_date).day
           hour1 = @user.designed_work_end_time.to_datetime.hour
           min1 = @user.designed_work_end_time.to_datetime.min
         scheduled_finished_at = Time.new(year, month, day, hour, min, 0,).to_time
@@ -297,13 +319,14 @@ class AttendancesController < ApplicationController
 
     # 勤怠変更申請関連のストロングパラメータとして使用
     def attendance_change_request_params
-      params.require(:user).permit(attendances: [:modification_request_status, :before_change_started_at, :initial_started_at, :before_change_finished_at,
+      params.require(:user).permit(attendances: [:worked_on, :started_at, :finished_at, :modification_request_status, :before_change_started_at, :initial_started_at, :before_change_finished_at,
                                                 :initial_finished_at, :after_change_started_at, :after_change_finished_at, :modification_next_day, :note, :modification_request_destination])[:attendances]
     end
 
     # 勤怠変更申請承認関連のストロングパラメータとして使用
     def attendance_change_notice_params
-      params.require(:user).permit(attendances: [:modification_request_status, :modification_change, :change_attendance_approval_date, :started_at, :finished_at, :before_change_started_at, :before_change_finished_at])[:attendances]
+      params.require(:user).permit(attendances: [:modification_request_status, :modification_change, :change_attendance_approval_date, :started_at, :finished_at, 
+                                                :before_change_started_at, :before_change_finished_at, :modification_next_day])[:attendances]
     end
 
     # 残業申請関連のストロングパラメータとして使用
