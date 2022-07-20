@@ -34,15 +34,15 @@
           <% if work_day.initial_started_at.nil? %>
             <td></td>
           <% else %>
-            <td><%= l(work_day.initial_started_at, format: :time) %></td>
+            <td><%= l(work_day.initial_started_at.floor_to(15.minutes), format: :time) %></td>
           <% end %>
           <% if work_day.initial_finished_at.nil? %>
             <td></td>
           <% else %>
-            <td><%= l(work_day.initial_finished_at, format: :time) %></td>
+            <td><%= l(work_day.initial_finished_at.floor_to(15.minutes), format: :time) %></td>
           <% end %>          
-          <td><%= l(work_day.after_change_started_at, format: :time) %></td>
-          <td><%= l(work_day.after_change_finished_at, format: :time) %></td>
+          <td><%= l(work_day.after_change_started_at.floor_to(15.minutes), format: :time) %></td>
+          <td><%= l(work_day.after_change_finished_at.floor_to(15.minutes), format: :time) %></td>
           <td><%= User.find_by(id: work_day.modification_request_destination).name %></td>
           <td><%= l(work_day.change_attendance_approval_date, format: :short2) %></td>
         </tr>

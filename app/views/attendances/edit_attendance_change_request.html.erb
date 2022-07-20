@@ -27,7 +27,9 @@
             <!--出社時間に対しての対応-->
             <!--変更後出社時間が未入力(初回)の場合は変更前・初期出社時間に出社時間をセットする-->
             <!--”承認”後の場合は変更前出社時間に変更後出社時間、"なし"後の場合は変更前出社時間に出社時間をセットする-->
-            <% if work_day.after_change_started_at.nil? %>
+            <% if work_day.after_change_started_at.nil? && work_day.modification_request_status == "なし" %>
+              <%= attendance.hidden_field :before_change_started_at, value: work_day.started_at %>
+            <% elsif work_day.after_change_started_at.nil? && work_day.modification_request_status != "なし" %>
               <%= attendance.hidden_field :before_change_started_at, value: work_day.started_at %> 
               <%= attendance.hidden_field :initial_started_at, value: work_day.started_at %>
             <% elsif work_day.after_change_started_at.present? && work_day.modification_request_status == "承認" %>
@@ -39,7 +41,9 @@
             <!--退社時間に対しての対応-->
             <!--変更後退社時間が未入力(初回)の場合は変更前・初期退社時間に退社時間をセットする-->
             <!--”承認”後の場合は変更前退社時間に変更後退社時間、"なし"後の場合は変更前退社時間に退社時間をセットする-->
-            <% if work_day.after_change_finished_at.nil? %>
+            <% if work_day.after_change_finished_at.nil? && work_day.modification_request_status == "なし" %>
+              <%= attendance.hidden_field :before_change_finished_at, value: work_day.finished_at %>
+            <% elsif work_day.after_change_finished_at.nil? && work_day.modification_request_status != "なし" %>
               <%= attendance.hidden_field :before_change_finished_at, value: work_day.finished_at %>
               <%= attendance.hidden_field :initial_finished_at, value: work_day.finished_at %>
             <% elsif work_day.after_change_finished_at.present? && work_day.modification_request_status == "承認" %>
@@ -61,11 +65,17 @@
               <td><%= attendance.time_field :after_change_finished_at, class: "form-control" %></td>
             <% end %>
             <td><%= attendance.check_box :modification_next_day, {}, "true", "false" %></td>
-            <td>
-              <% if work_day.started_at.present? && work_day.finished_at.present? %>
-                <%= working_times(work_day.started_at, work_day.finished_at) %>
-              <% end %>
-            </td>
+            <!--在社時間-->
+            <% if work_day. modification_request_status == "申請中" || work_day. modification_request_status == "なし" %>
+              <td></td>
+            <% else %>
+              <td>
+                <% if work_day.started_at.present? && work_day.finished_at.present? %>
+                  <%= working_times(work_day.started_at, work_day.finished_at) %>
+                <% end %>
+              </td>
+            <% end %>
+            <!--備考-->
             <td><%= attendance.text_field :note, class:"form-control" %></td>
             <td>
               <%= attendance.collection_select :modification_request_destination, User.all.where(superior: true).where.not(id: current_user.id).order(:id), :id, :name, {include_blank: "上長を選択してください", selected: nil}, {class: "form-control"} %>
