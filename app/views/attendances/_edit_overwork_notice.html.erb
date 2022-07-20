@@ -30,9 +30,13 @@
             <tbody class="line">
               <% @attendance_lists.where(user_id: user.id).each do |work_day| %>
                 <%= f.fields_for "attendances[]", work_day do |attendance| %>
+                  <% css_class = case work_day.worked_on.wday
+                                when 6 then 'text-primary'
+                                when 0 then 'text-danger'
+                                end %>
                   <tr>
                     <td><%= l(work_day.worked_on, format: :short) %></td>
-                    <td><%= $days_of_the_week[work_day.worked_on.wday] %></td>
+                    <td class = "<%= css_class %>"><%= $days_of_the_week[work_day.worked_on.wday] %></td>
                     <td><%= l(work_day.scheduled_finished_at.floor_to(15.minutes), format: :time) %></td>
                     <td><%= format_basic_info(user.designed_work_end_time) %></td>
                     <td><%= work_day.over_work_time %></td>
