@@ -155,7 +155,7 @@ class AttendancesController < ApplicationController
   end
 
   def edit_attendance_change_notice
-    @request_users = User.where(id: Attendance.where(modification_request_destination: @user.id).select(:user_id))
+    @request_users = User.where(id: Attendance.where(modification_request_destination: @user.id).where(modification_request_status: "申請中").select(:user_id))
     @attendance_lists = Attendance.where("(modification_request_destination = ?) AND (modification_request_status = ?)", @user.id, "申請中").order(worked_on: "ASC")
     @attendance = Attendance.new
   end
