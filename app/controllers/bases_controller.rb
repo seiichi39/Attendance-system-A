@@ -3,7 +3,7 @@ class BasesController < ApplicationController
   before_action :admin_user, only: :index
 
   def index
-    @bases = Base.all
+    @bases = Base.all.order(base_number: "ASC")
   end
 
   def new
