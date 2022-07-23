@@ -119,10 +119,47 @@ class AttendancesController < ApplicationController
   def update_attendance_change_request
     ActiveRecord::Base.transaction do
       attendance_change_request_params.each do |id, item|
-        attendance = Attendance.find(id)
-        unless attendance.after_change_started_at.present? && attendance.after_change_finished_at.present? && item[:modification_request_destination].blank?
-          unless attendance.modification_request_status == "なし" && item[:after_change_started_at].blank? && item[:after_change_finished_at].blank?
-            if item[:after_change_finished_at].present? && item[:after_change_started_at].present?
+        attendance = Attendance.find(id) 
+          if item[:modification_request_destination].present?
+            if item[:initial_started_at].present? && item[:initial_finished_at].present? 
+              if item[:modification_next_day] == "true"
+                year = (item[:worked_on].to_date + 1).year 
+                month = (item[:worked_on].to_date + 1).month
+                day = (item[:worked_on].to_date + 1).day 
+              else
+                year = (item[:worked_on].to_date).year 
+                month = (item[:worked_on].to_date).month
+                day = (item[:worked_on].to_date).day
+              end
+              hour = (item[:initial_finished_at].to_time).hour
+              min = (item[:initial_finished_at].to_time).min
+              year1 = (item[:worked_on].to_date).year 
+              month1 = (item[:worked_on].to_date).month
+              day1 = (item[:worked_on].to_date).day
+              hour1 = (item[:initial_started_at].to_time).hour
+              min1 = (item[:initial_started_at].to_time).min
+              item[:initial_finished_at] = Time.new(year, month, day, hour, min, 0,).to_time
+              item[:initial_started_at] = Time.new(year1, month1, day1, hour1, min1, 0,).to_time
+            elsif item[:before_change_started_at].present? && item[:before_change_finished_at].present?
+              if item[:modification_next_day] == "true"
+                year = (item[:worked_on].to_date + 1).year 
+                month = (item[:worked_on].to_date + 1).month
+                day = (item[:worked_on].to_date + 1).day 
+              else
+                year = (item[:worked_on].to_date).year 
+                month = (item[:worked_on].to_date).month
+                day = (item[:worked_on].to_date).day
+              end
+              hour = (item[:before_change_finished_at].to_time).hour
+              min = (item[:before_change_finished_at].to_time).min
+              year1 = (item[:worked_on].to_date).year 
+              month1 = (item[:worked_on].to_date).month
+              day1 = (item[:worked_on].to_date).day
+              hour1 = (item[:before_change_started_at].to_time).hour
+              min1 = (item[:before_change_started_at].to_time).min
+              item[:before_change_finished_at] = Time.new(year, month, day, hour, min, 0,).to_time
+              item[:before_change_started_at] = Time.new(year1, month1, day1, hour1, min1, 0,).to_time
+            elsif item[:after_change_started_at].present? && item[:after_change_finished_at].present?
               if item[:modification_next_day] == "true"
                 year = (item[:worked_on].to_date + 1).year 
                 month = (item[:worked_on].to_date + 1).month
@@ -140,15 +177,17 @@ class AttendancesController < ApplicationController
               hour1 = (item[:after_change_started_at].to_time).hour
               min1 = (item[:after_change_started_at].to_time).min
               item[:after_change_finished_at] = Time.new(year, month, day, hour, min, 0,).to_time
-              item[:after_change_started_at] = Time.new(year1, month1, day1, hour1, min1, 0,).to_time
+              item[:after_change_started_at] = Time.new(year1, month1, day1, hour1, min1, 0,).to_time            
             end
             attendance.update_attributes!(item)
           end
+        if item[:modification_request_destination].blank? && item[:initial_started_at].present? && item[:initial_finished_at].present?
+          flash[:warning] = "上長を選択してないため、申請できていない日付があります。"
         end
       end
     end
-    flash[:success] = "勤怠変更情報を申請しました。"
-    redirect_to attendances_edit_one_month_request_user_path(current_user)
+      flash[:success] = "勤怠変更を申請しました。"
+      redirect_to attendances_edit_one_month_request_user_path(current_user)
   rescue ActiveRecord::RecordInvalid
     flash[:danger] = "無効な入力データがあったため、申請をキャンセルしました。"
     redirect_to attendances_edit_one_month_request_user_path(current_user)
@@ -167,14 +206,30 @@ class AttendancesController < ApplicationController
       if item[:modification_change] == "true"
         if item[:modification_request_status] == "承認"
         elsif item[:modification_request_status] == "否認"
-          item[:started_at] = attendance.started_at
-          item[:finished_at] = attendance.finished_at
-          item[:before_change_started_at] = attendance.before_change_started_at
-          item[:before_change_finished_at] = attendance.before_change_finished_at
+          item[:started_at] = nil
+          item[:finished_at] = nil
           item[:change_attendance_approval_date] = nil
+          if attendance.before_change_started_at.present? && attendance.after_change_started_at.present?
+            item[:initial_started_at] = attendance.initial_started_at
+            item[:initial_finished_at] = attendance.initial_finished_at
+            item[:before_change_started_at] = attendance.before_change_started_at
+            item[:before_change_finished_at] = attendance.before_change_finished_at
+            item[:after_change_started_at] = nil
+            item[:after_change_finished_at] = nil                        
+          elsif attendance.before_change_started_at.present? && attendance.after_change_started_at.blank?
+            item[:initial_started_at] = attendance.initial_started_at
+            item[:initial_finished_at] = attendance.initial_finished_at
+            item[:before_change_started_at] = nil
+            item[:before_change_finished_at] = nil
+          else
+            item[:initial_started_at] = nil
+            item[:initial_finished_at] = nil
+          end
         elsif item[:modification_request_status] == "なし" 
-          item[:started_at] = attendance.started_at
-          item[:finished_at] = attendance.finished_at
+          item[:started_at] = nil
+          item[:finished_at] = nil
+          item[:initial_started_at] = nil
+          item[:initial_finished_at] = nil          
           item[:before_change_started_at] = nil
           item[:before_change_finished_at] = nil
           item[:after_change_started_at] = nil

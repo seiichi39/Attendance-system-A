@@ -30,20 +30,31 @@
     <tbody class="line">
       <% @attendance_lists.each do |work_day| %>
         <tr>
+          <!--日付-->
           <td><%= l(work_day.worked_on, format: :short) %></td>
-          <% if work_day.initial_started_at.nil? %>
+          <!--変更前出社時間-->
+          <td><%= l(work_day.initial_started_at.floor_to(15.minutes), format: :time) %></td>
+          <!--変更前退社時間-->
+          <td><%= l(work_day.initial_finished_at.floor_to(15.minutes), format: :time) %></td>
+          <!--変更後出社時間-->
+          <% if work_day.before_change_started_at.blank? && work_day.after_change_started_at.blank? %>
             <td></td>
+          <% elsif work_day.before_change_started_at.present? && work_day.after_change_started_at.blank? %>
+            <td><%= l(work_day.before_change_started_at.floor_to(15.minutes), format: :time) %></td>
           <% else %>
-            <td><%= l(work_day.initial_started_at.floor_to(15.minutes), format: :time) %></td>
+            <td><%= l(work_day.after_change_started_at.floor_to(15.minutes), format: :time) %></td>
           <% end %>
-          <% if work_day.initial_finished_at.nil? %>
+          <!--変更後退社時間-->
+          <% if work_day.before_change_finished_at.blank? && work_day.after_change_finished_at.blank? %>
             <td></td>
+          <% elsif work_day.before_change_finished_at.present? && work_day.after_change_finished_at.blank? %>
+            <td><%= l(work_day.before_change_finished_at.floor_to(15.minutes), format: :time) %></td>
           <% else %>
-            <td><%= l(work_day.initial_finished_at.floor_to(15.minutes), format: :time) %></td>
-          <% end %>          
-          <td><%= l(work_day.after_change_started_at.floor_to(15.minutes), format: :time) %></td>
-          <td><%= l(work_day.after_change_finished_at.floor_to(15.minutes), format: :time) %></td>
+            <td><%= l(work_day.after_change_finished_at.floor_to(15.minutes), format: :time) %></td>
+          <% end %>
+          <!--承認者-->
           <td><%= User.find_by(id: work_day.modification_request_destination).name %></td>
+          <!--承認日-->
           <td><%= l(work_day.change_attendance_approval_date, format: :short2) %></td>
         </tr>
       <% end %>
